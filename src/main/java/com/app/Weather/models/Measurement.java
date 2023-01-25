@@ -1,10 +1,12 @@
 package com.app.Weather.models;
 
+import com.app.Weather.DTO.SensorDTO;
 import jakarta.persistence.*;
+import org.modelmapper.ModelMapper;
 
 @Entity
 @Table(name="measurment")
-public class Measurment {
+public class Measurement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -17,10 +19,14 @@ public class Measurment {
     @JoinColumn(name = "sensor_id", referencedColumnName = "id")
     private Sensor sensor; // NOT EMPTY and PRESENT
 
-    public Measurment() {
+    @Transient
+    private SensorDTO sensorDTO;
+
+
+    public Measurement() {
     }
 
-    public Measurment(double value, boolean raining, Sensor sensor) {
+    public Measurement(double value, boolean raining, Sensor sensor) {
         this.value = value;
         this.raining = raining;
         this.sensor = sensor;
@@ -58,9 +64,18 @@ public class Measurment {
         this.sensor = sensor;
     }
 
+    public SensorDTO getSensorDTO() {
+        ModelMapper modelMapper = new ModelMapper();
+        return  modelMapper.map(sensor, SensorDTO.class);
+    }
+
+    public void setSensorDTO(SensorDTO sensorDTO) {
+        this.sensorDTO = sensorDTO;
+    }
+
     @Override
     public String toString() {
-        return "Measurment{" +
+        return "Measurement{" +
                 "\nid=" + id +
                 "\nvalue=" + value +
                 "\nraining=" + raining +

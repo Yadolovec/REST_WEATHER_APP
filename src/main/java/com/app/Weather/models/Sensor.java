@@ -14,14 +14,14 @@ public class Sensor {
     @Column(name = "sensor_name")
     private String sensorName; //UNIQUE and FROM 3 TO 30 SYLLABLES
     @OneToMany(mappedBy = "sensor")
-    private List<Measurment> measurments;
+    private List<Measurement> measurements;
 
     public Sensor() {
     }
 
-    public Sensor(String sensorName, List<Measurment> measurments) {
+    public Sensor(String sensorName, List<Measurement> measurements) {
         this.sensorName = sensorName;
-        this.measurments = measurments;
+        this.measurements = measurements;
     }
 
     public int getId() {
@@ -42,12 +42,12 @@ public class Sensor {
         this.sensorName = sensorName;
     }
 
-    public List<Measurment> getMeasurments() {
-        return measurments;
+    public List<Measurement> getMeasurments() {
+        return measurements;
     }
 
-    public void setMeasurments(List<Measurment> measurments) {
-        this.measurments = measurments;
+    public void setMeasurments(List<Measurement> measurements) {
+        this.measurements = measurements;
     }
 
     @Override

@@ -4,10 +4,12 @@ import com.app.Weather.models.Sensor;
 import com.app.Weather.repositories.SensorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class SensorService {
     private final SensorRepository sensorRepository;
 
@@ -26,6 +28,11 @@ public class SensorService {
 
     public Sensor findByName(String sensorName){
         return sensorRepository.findSensorBySensorName(sensorName).orElse(null);
+    }
+
+    @Transactional
+    public void save(Sensor sensor){
+        sensorRepository.save(sensor);
     }
 
 }

@@ -22,4 +22,9 @@ public class MeasurementService {
     public List<Measurement> findAll(){
         return measurementRepository.findAll();
     }
+
+    public List<Measurement> findAllWhenRaining(){
+        return measurementRepository.findMeasurementByRainingTrue();
+    }
+
 }

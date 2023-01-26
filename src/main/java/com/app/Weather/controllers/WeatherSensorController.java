@@ -15,6 +15,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,6 +99,7 @@ public class WeatherSensorController {
         measurement.setSensor(
                 sensorService.findByName(measurement.getSensorDTO().getSensorName())
         );
+        measurement.setCreatedTime(LocalDateTime.now());
         measurementService.save(measurement);
         return ResponseEntity.ok(HttpStatus.OK);
 

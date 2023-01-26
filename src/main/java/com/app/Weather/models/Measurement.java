@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Range;
 import org.modelmapper.ModelMapper;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name="measurment")
 public class Measurement {
@@ -19,6 +21,10 @@ public class Measurement {
     @Column(name = "raining")
 //    @NotEmpty(message = "Raining should not be empty")
     private Boolean raining; // NOT EMPTY
+
+    @Column(name = "created_time")
+    private LocalDateTime createdTime;
+
     @ManyToOne
     @JoinColumn(name = "sensor_id", referencedColumnName = "id")
     private Sensor sensor; // NOT EMPTY and PRESENT
@@ -75,6 +81,18 @@ public class Measurement {
 
     public void setSensorDTO(SensorDTO sensorDTO) {
         this.sensorDTO = sensorDTO;
+    }
+
+    public Boolean getRaining() {
+        return raining;
+    }
+
+    public LocalDateTime getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(LocalDateTime createdTime) {
+        this.createdTime = createdTime;
     }
 
     @Override

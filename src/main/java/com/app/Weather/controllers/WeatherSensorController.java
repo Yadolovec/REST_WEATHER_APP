@@ -6,13 +6,16 @@ import com.app.Weather.models.Measurement;
 import com.app.Weather.models.Sensor;
 import com.app.Weather.services.MeasurementService;
 import com.app.Weather.services.SensorService;
+import com.app.Weather.utils.SensorExceprionHandler;
+import com.app.Weather.utils.SensorNotCreatedException;
+import com.app.Weather.utils.SensorValidator;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,12 +25,14 @@ public class WeatherSensorController {
     private final MeasurementService measurementService;
     private final SensorService sensorService;
     private final ModelMapper modelMapper;
+    private final SensorValidator sensorValidator;
 
 
-    public WeatherSensorController(MeasurementService measurementService, SensorService sensorService, ModelMapper modelMapper) {
+    public WeatherSensorController(MeasurementService measurementService, SensorService sensorService, ModelMapper modelMapper, SensorValidator sensorValidator) {
         this.measurementService = measurementService;
         this.sensorService = sensorService;
         this.modelMapper = modelMapper;
+        this.sensorValidator = sensorValidator;
     }
 
     @GetMapping("/measurements")
@@ -41,9 +46,28 @@ public class WeatherSensorController {
     }
 
     @PostMapping("/sensors/registration")
-    public ResponseEntity<HttpStatus> register(@RequestBody SensorDTO sensorDTO){
+    public ResponseEntity<HttpStatus> register(@RequestBody @Valid SensorDTO sensorDTO,
+                                               BindingResult bindingResult){
+
+        sensorValidator.validate(sensorDTO, bindingResult);
+
+        if (bindingResult.hasErrors()){
+            StringBuilder errorMsg = new StringBuilder();
+            List <FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors){
+                errorMsg
+                        .append(error.getField())
+                        .append(" - ")
+                        .append(error.getDefaultMessage())
+                        .append("; ");
+            }
+
+            throw new SensorNotCreatedException(errorMsg.toString());
+        }
+
         Sensor sensor = new Sensor();
         sensor.setSensorName(sensorDTO.getSensorName());
+
         sensorService.save(sensor);
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -75,4 +99,15 @@ public class WeatherSensorController {
     public Measurement convertMeasureFromDTO(MeasurementDTO measurementDTO){
         return modelMapper.map(measurementDTO, Measurement.class);
     }
+
+
+    @ExceptionHandler
+    public ResponseEntity<SensorExceprionHandler> errorHandler(SensorNotCreatedException e){
+        SensorExceprionHandler handler = new SensorExceprionHandler(
+                e.getMessage(),
+                System.currentTimeMillis());
+
+        return new ResponseEntity<>(handler, HttpStatus.BAD_REQUEST);
+    }
+
 }

@@ -6,9 +6,7 @@ import com.app.Weather.models.Measurement;
 import com.app.Weather.models.Sensor;
 import com.app.Weather.services.MeasurementService;
 import com.app.Weather.services.SensorService;
-import com.app.Weather.utils.SensorExceprionHandler;
-import com.app.Weather.utils.SensorNotCreatedException;
-import com.app.Weather.utils.SensorValidator;
+import com.app.Weather.utils.*;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -26,13 +24,15 @@ public class WeatherSensorController {
     private final SensorService sensorService;
     private final ModelMapper modelMapper;
     private final SensorValidator sensorValidator;
+    private final MeasurementValidator measurementValidator;
 
 
-    public WeatherSensorController(MeasurementService measurementService, SensorService sensorService, ModelMapper modelMapper, SensorValidator sensorValidator) {
+    public WeatherSensorController(MeasurementService measurementService, SensorService sensorService, ModelMapper modelMapper, SensorValidator sensorValidator, MeasurementValidator measurementValidator) {
         this.measurementService = measurementService;
         this.sensorService = sensorService;
         this.modelMapper = modelMapper;
         this.sensorValidator = sensorValidator;
+        this.measurementValidator = measurementValidator;
     }
 
     @GetMapping("/measurements")
@@ -73,7 +73,25 @@ public class WeatherSensorController {
     }
 
     @PostMapping("/measurements/add")
-    public ResponseEntity<HttpStatus> addMeasure(@RequestBody MeasurementDTO measurementDTO){
+    public ResponseEntity<HttpStatus> addMeasure(@RequestBody @Valid MeasurementDTO measurementDTO,
+                                                 BindingResult bindingResult){
+
+        measurementValidator.validate(measurementDTO, bindingResult);
+
+        if(bindingResult.hasErrors()){
+            StringBuilder errorMessage = new StringBuilder();
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for(FieldError error : errors){
+                errorMessage
+                        .append(error.getField())
+                        .append(" - ")
+                        .append(error.getDefaultMessage())
+                        .append("; ");
+            }
+
+            throw new MeasurementNotRegistredException(errorMessage.toString());
+        }
+
         Measurement measurement = new Measurement();
         measurement = convertMeasureFromDTO(measurementDTO);
         measurement.setSensor(
@@ -102,11 +120,18 @@ public class WeatherSensorController {
 
 
     @ExceptionHandler
-    public ResponseEntity<SensorExceprionHandler> errorHandler(SensorNotCreatedException e){
-        SensorExceprionHandler handler = new SensorExceprionHandler(
+    public ResponseEntity<ExceprionHandler> errorHandler(SensorNotCreatedException e){
+        ExceprionHandler handler = new ExceprionHandler(
                 e.getMessage(),
                 System.currentTimeMillis());
+        return new ResponseEntity<>(handler, HttpStatus.BAD_REQUEST);
+    }
 
+    @ExceptionHandler
+    public ResponseEntity<ExceprionHandler> errorHandler(MeasurementNotRegistredException e){
+        ExceprionHandler handler = new ExceprionHandler(
+                e.getMessage(),
+                System.currentTimeMillis());
         return new ResponseEntity<>(handler, HttpStatus.BAD_REQUEST);
     }
 

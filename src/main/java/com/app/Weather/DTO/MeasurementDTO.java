@@ -1,13 +1,21 @@
 package com.app.Weather.DTO;
 
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Range;
+
 
 public class MeasurementDTO {
 
     @Column(name = "value_temp")
+//    @Range(min = -100, max = 100, message = "Temperature should be between -100 to 100")
     private double value; // -100 to 100
     @Column(name = "raining")
-    private boolean raining; // NOT EMPTY
+//    @NotEmpty(message = "Raining should not be empty")
+//    @NotNull(message = "should not be null")
+    private Boolean raining; // NOT EMPTY
     private SensorDTO sensorDTO;
 
     public double getValue() {
@@ -18,11 +26,11 @@ public class MeasurementDTO {
         this.value = value;
     }
 
-    public boolean isRaining() {
+    public Boolean isRaining() {
         return raining;
     }
 
-    public void setRaining(boolean raining) {
+    public void setRaining(Boolean raining) {
         this.raining = raining;
     }
 

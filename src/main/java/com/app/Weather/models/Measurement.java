@@ -2,6 +2,8 @@ package com.app.Weather.models;
 
 import com.app.Weather.DTO.SensorDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import org.hibernate.validator.constraints.Range;
 import org.modelmapper.ModelMapper;
 
 @Entity
@@ -12,8 +14,10 @@ public class Measurement {
     @Column(name = "id")
     private int id;
     @Column(name = "value_temp")
+//    @Range(min = -100, max = 100, message = "Temperature should be between -100 to 100")
     private double value; // -100 to 100
     @Column(name = "raining")
+//    @NotEmpty(message = "Raining should not be empty")
     private boolean raining; // NOT EMPTY
     @ManyToOne
     @JoinColumn(name = "sensor_id", referencedColumnName = "id")

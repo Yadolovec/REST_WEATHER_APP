@@ -18,7 +18,7 @@ public class Measurement {
     private double value; // -100 to 100
     @Column(name = "raining")
 //    @NotEmpty(message = "Raining should not be empty")
-    private boolean raining; // NOT EMPTY
+    private Boolean raining; // NOT EMPTY
     @ManyToOne
     @JoinColumn(name = "sensor_id", referencedColumnName = "id")
     private Sensor sensor; // NOT EMPTY and PRESENT
@@ -30,7 +30,7 @@ public class Measurement {
     public Measurement() {
     }
 
-    public Measurement(double value, boolean raining, Sensor sensor) {
+    public Measurement(double value, Boolean raining, Sensor sensor) {
         this.value = value;
         this.raining = raining;
         this.sensor = sensor;
@@ -52,11 +52,11 @@ public class Measurement {
         this.value = value;
     }
 
-    public boolean isRaining() {
+    public Boolean isRaining() {
         return raining;
     }
 
-    public void setRaining(boolean raining) {
+    public void setRaining(Boolean raining) {
         this.raining = raining;
     }
 

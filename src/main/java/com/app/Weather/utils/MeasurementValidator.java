@@ -28,13 +28,7 @@ public class MeasurementValidator implements Validator {
             errors.rejectValue("sensorDTO", "", "There is no sensor with that name" );
         }
 
-        if (measurementDTO.getValue()>100||measurementDTO.getValue()<-100){
-            errors.rejectValue("value", "", "Temperature should be between -100 to 100" );
-        }
 
-        if (measurementDTO.isRaining()==null){
-            errors.rejectValue("raining", "", "Raining couldnt be empty" );
-        }
 
     }
 }

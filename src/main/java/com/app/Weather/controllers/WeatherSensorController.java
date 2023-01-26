@@ -48,6 +48,18 @@ public class WeatherSensorController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @PostMapping("/measurements/add")
+    public ResponseEntity<HttpStatus> addMeasure(@RequestBody MeasurementDTO measurementDTO){
+        Measurement measurement = new Measurement();
+        measurement = convertMeasureFromDTO(measurementDTO);
+        measurement.setSensor(
+                sensorService.findByName(measurement.getSensorDTO().getSensorName())
+        );
+        measurementService.save(measurement);
+        return ResponseEntity.ok(HttpStatus.OK);
+
+    }
+
 
     public SensorDTO convertSensorToDTO(Sensor sensor){
         return modelMapper.map(sensor, SensorDTO.class);
@@ -58,5 +70,9 @@ public class WeatherSensorController {
 
     public MeasurementDTO convertMeasureToDTO(Measurement measurement){
         return modelMapper.map(measurement, MeasurementDTO.class);
+    }
+
+    public Measurement convertMeasureFromDTO(MeasurementDTO measurementDTO){
+        return modelMapper.map(measurementDTO, Measurement.class);
     }
 }

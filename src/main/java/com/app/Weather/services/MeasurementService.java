@@ -27,4 +27,8 @@ public class MeasurementService {
         return measurementRepository.findMeasurementByRainingTrue();
     }
 
+    @Transactional
+    public void save(Measurement measurement){
+        measurementRepository.save(measurement);
+    }
 }
